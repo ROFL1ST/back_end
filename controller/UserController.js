@@ -1,8 +1,12 @@
-const SiswaModel = require("../models").siswa;
 const Pembayaran = require("../models").pembayaran;
+const SppModel = require("../models").spp;
 const PetugasModel = require("../models").petugas;
+const Kelas = require("../models").kelas
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
+const petugas = require("../models/petugas");
+const { user } = require("pg/lib/defaults");
+const SiswaModel = require("../models").siswa;
 const createSiswa = async (req, res) => {
   try {
     let body = req.body;
@@ -41,53 +45,23 @@ const detailPetugas = async (req, res) => {
 };
 const index = async (req, res) => {
   try {
-    let { keyword, page, pageSize, orderBy, sortBy } = req.query;
-    const list = await SiswaModel.findAll({
-      attributes: ["nis", "nama", "alamat", "noTelp"],
-      where: {
-        ...(keyword !== undefined && {
-          [Op.or]: [
-            {
-              nisn: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-            {
-              tglBayar: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-            {
-              bulanDibayar: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-            {
-              tahunDibayar: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-          ],
-        }),
-      },
+    let { keyword, page, pageSize, orderBy, sortBy, pageActive } = req.query;
+    // const { limit, offset } = getPagination(page, pageSize);
+    const dataUser = await SiswaModel.findAll({
+      attributes: ["id", "nisn", "nama", "alamat", "noTelp"],
       include: [
         {
-          model: Pembayaran,
+          model: Kelas,
           require: true,
-          as: "pembayaran",
-          attributes: ["nisn"],
+          as: "kelas",
+          attributes: ["namaKelas", "kompetensi_keahlian"],
         },
       ],
-
-      order: [[sortBy, orderBy]], // mengurutkan
-      offset: page, // mulai dari tambah satu
-      limit: pageSize,
     });
-
     return res.json({
       status: "succes",
       msg: "find them",
-      data: list,
+      data: dataUser,
     });
   } catch (error) {
     console.log(error);
@@ -97,7 +71,7 @@ const index = async (req, res) => {
 const createPembayaran = async (req, res) => {
   try {
     let body = req.body;
-    const pembayarans = await Pembayaran.create(body);
+    const pembayarans = await SppModel.create(body);
     res.status(200).json({
       status: "Success",
       messege: "Register pembayaran Berhasil",
@@ -132,10 +106,186 @@ const detail = async (req, res) => {
   }
 };
 
+const indexPetugas = async (req, res) => {
+  try {
+    let { keyword, page, pageSize, orderBy, sortBy, pageActive } = req.query;
+    const list = await PetugasModel.findAll({
+      attributes: ["id", "username", "namaPetugas", "level"],
+      where: {
+        ...(keyword !== undefined && {
+          [Op.or]: [
+            {
+              namaPetugas: {
+                [Op.like]: `%${keyword}%`,
+              },
+            },
+            {
+              level: {
+                [Op.like]: `%${keyword}%`,
+              },
+            },
+          ],
+        }),
+      },
+    
+    });
+    return res.json({
+      status: "succes",
+      msg: "find them",
+      data: list,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(403).json({
+      status: "fail",
+      msg: "something's wrong",
+    });
+  }
+};
+
+const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, tglBayar, bulanDibayar, jumlahBayar } = req.body;
+    const usersUpdate = await SppModel.findByPk(id);
+    if (usersUpdate === null) {
+      return res.json({
+        status: "fail",
+        msg: "there's no id like this, LMAO",
+      });
+    }
+    await Pembayaran.update(
+      {
+        bulanDibayar,
+        jumlahBayar,
+        tglBayar,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    return res.json({
+      status: "Berhasil",
+      messege: "User Berhasil Diupdate",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(403).json({
+      status: "fail",
+      msg: "there's a mistake",
+      data: user,
+    });
+  }
+};
+
+const detailList = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pembayaran = await SppModel.findByPk(id);
+    if (pembayaran === null) {
+      return res.json({
+        status: "Fail",
+        msg: "pembayaran tidak terdaftar",
+      });
+    }
+    console.log(pembayaran);
+    return res.json({
+      status: "succes",
+      msg: "pembayaran ditemukan",
+      data: [pembayaran],
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const hapus = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const dataDetail = await SppModel.destroy({
+      where: {
+        id: id,
+      },
+    });
+    if (dataDetail === 0) {
+      return res.json({
+        status: "Gagal",
+        messege: "Data User Tidak Ditemukan",
+      });
+    }
+    return res.json({
+      status: "Berhasil",
+      messege: "Data Berhasil Dihapus",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(403).json({
+      status: "Fail",
+      messege: "Ada Kesalahan",
+    });
+  }
+};
+
+// History
+
+const detailListHistory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pembayaran = await Pembayaran.findByPk(id);
+    if (pembayaran === null) {
+      return res.json({
+        status: "Fail",
+        msg: "pembayaran tidak terdaftar",
+      });
+    }
+    console.log(pembayaran);
+    return res.json({
+      status: "succes",
+      msg: "pembayaran ditemukan",
+      data: [pembayaran],
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const hapusHistory = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const dataDetail = await Pembayaran.destroy({
+      where: {
+        id: id,
+      },
+    });
+    if (dataDetail === 0) {
+      return res.json({
+        status: "Gagal",
+        messege: "Data User Tidak Ditemukan",
+      });
+    }
+    return res.json({
+      status: "Berhasil",
+      messege: "Data Berhasil Dihapus",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(403).json({
+      status: "Fail",
+      messege: "Ada Kesalahan",
+    });
+  }
+};
 module.exports = {
   index,
   createSiswa,
   createPembayaran,
   detail,
   detailPetugas,
+  indexPetugas,
+  update,
+  detailList,
+  hapus,
+  detailListHistory,
+  hapusHistory
 };

@@ -23,7 +23,13 @@ module.exports = {
       },
       idKelas: {
         type: Sequelize.INTEGER,
-        unique: true
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        references: {
+          model: "kelas",
+          key: "idKelas",
+          as: "idKelas",
+        },
       },
       alamat: {
         type: Sequelize.STRING
@@ -33,7 +39,8 @@ module.exports = {
       },
       idSpp: {
         type: Sequelize.INTEGER,
-        unique: true
+        unique: true,
+       
       },
       createdAt: {
         allowNull: false,

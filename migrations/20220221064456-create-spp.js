@@ -1,40 +1,40 @@
-'use strict';
+"use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('kelas', {
+    await queryInterface.createTable("spps", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      idKelas: {
         type: Sequelize.INTEGER,
-        onDelete: "CASCADE",
+      },
+      idSpp: {
+        type: Sequelize.INTEGER,
+
         onUpdate: "CASCADE",
         references: {
           model: "siswas",
-          key: "idKelas",
-          as: "idKelas",
+          key: "idSpp",
+          as: "idSpp",
         },
       },
-      namaKelas: {
-        type: Sequelize.STRING
+      tahun: {
+        type: Sequelize.INTEGER,
       },
-      kompetensi_keahlian: {
-        type: Sequelize.STRING
+      nominal: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
-    });
+        type: Sequelize.DATE,
+      },
+    }).then(() => queryInterface.addIndex('spps', ['idSpp']))
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('kelas');
-  }
+    await queryInterface.dropTable("spps");
+  },
 };

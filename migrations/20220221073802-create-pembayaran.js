@@ -42,7 +42,7 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
         references: {
-          model: "siswas",
+          model: "spps",
           key: "idSpp",
           as: "idSpp",
         },
@@ -53,6 +53,7 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        
       },
       updatedAt: {
         allowNull: false,
