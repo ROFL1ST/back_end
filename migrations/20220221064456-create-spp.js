@@ -1,38 +1,40 @@
 "use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("spps", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      idSpp: {
-        type: Sequelize.INTEGER,
-
-        onUpdate: "CASCADE",
-        references: {
-          model: "siswas",
-          key: "idSpp",
-          as: "idSpp",
+    await queryInterface
+      .createTable("spps", {
+        id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: Sequelize.INTEGER,
         },
-      },
-      tahun: {
-        type: Sequelize.INTEGER,
-      },
-      nominal: {
-        type: Sequelize.INTEGER,
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-    }).then(() => queryInterface.addIndex('spps', ['idSpp']))
+        idSpp: {
+          type: Sequelize.INTEGER,
+
+          onUpdate: "CASCADE",
+          references: {
+            model: "siswas",
+            key: "id",
+            as: "idSpp",
+          },
+        },
+        tahun: {
+          type: Sequelize.INTEGER,
+        },
+        nominal: {
+          type: Sequelize.INTEGER,
+        },
+        createdAt: {
+          allowNull: false,
+          type: Sequelize.DATE,
+        },
+        updatedAt: {
+          allowNull: false,
+          type: Sequelize.DATE,
+        },
+      })
+      .then(() => queryInterface.addIndex("spps", ["idSpp"]));
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("spps");

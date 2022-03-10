@@ -6,7 +6,7 @@ const userList = async (req, res) => {
     const { name, jenisKelamin, id } = req.query;
     console.log(name);
     const users = await sequelize.query(
-      "  SELECT a.id, a.idSpp, a.tahun, a.nominal, b.nama, b.alamat, b.nisn FROM spps AS a LEFT JOIN siswas AS b ON (a.idSpp = b.idSpp)",
+      "  SELECT a.id, a.idSpp, a.tahun, a.nominal, b.nama, b.alamat, b.nisn FROM spps AS a LEFT JOIN siswas AS b ON (a.idSpp = b.id)",
       {
         type: QueryTypes.SELECT,
         raw: true,
