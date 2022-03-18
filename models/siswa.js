@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       siswa.hasOne(models.spp, { as: "spp", foreignKey: "idSpp" });
       siswa.belongsTo(models.kelas, {as: "kelas", foreignKey: "idKelas"})
-      siswa.hasOne(models.pembayaran, { as: "pembayaran", foreignKey: "nisn" });
+      siswa.hasOne(models.pembayaran, { as: "pembayaran", foreignKey: "nisn",  });
     }
   }
   siswa.init(
@@ -23,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       idKelas: DataTypes.INTEGER,
       alamat: DataTypes.STRING,
       noTelp: DataTypes.STRING,
-      idSpp: DataTypes.INTEGER,
     },
     {
       sequelize,

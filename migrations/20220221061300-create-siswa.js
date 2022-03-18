@@ -27,7 +27,7 @@ module.exports = {
         onUpdate: "CASCADE",
         references: {
           model: "kelas",
-          key: "idKelas",
+          key: "id",
           as: "idKelas",
         },
       },
@@ -37,11 +37,7 @@ module.exports = {
       noTelp: {
         type: Sequelize.STRING
       },
-      idSpp: {
-        type: Sequelize.INTEGER,
-        unique: true,
-       
-      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -117,21 +117,21 @@ const loginSiswa = async (req, res) => {
   try {
     const { nisn, password } = req.body;
     // CEK username DULU ADAA ATAU NGGAK
-    const dataUser = await SiswaModel.findOne({
+    const dataSiswa = await SiswaModel.findOne({
       where: {
-        nisn: nisn,
+        nisn,
       },
     });
     // CEK username DAN PASSWORD HARUS SAMA DARI DATABASE
     // CEK usernameNYA
-    if (dataUser === null) {
+    if (dataSiswa === null) {
       return res.status(422).json({
         status: "Gagal",
-        messege: "username Belum Terdaftar Di Data Kami",
+        messege: "NISN Belum Terdaftar Di Data Kami",
       });
     }
     // CEK PASSWORDNYA
-    const verify = bcrypt.compareSync(password, dataUser.password);
+    const verify = bcrypt.compareSync(password, dataSiswa.password);
     if (!verify) {
       return res.status(422).json({
         status: "Gagal",
@@ -139,7 +139,7 @@ const loginSiswa = async (req, res) => {
       });
     }
 
-    const users = await UserModel.findOne({
+    const users = await SiswaModel.findOne({
       attributes: ["id", "nisn", "nama", "alamat"],
       where: {
         nisn: nisn,
@@ -147,8 +147,8 @@ const loginSiswa = async (req, res) => {
     });
     const token = jwt.sign(
       {
-        id: dataUser.id,
-        nisn: dataUser.nisn,
+        id: dataSiswa.id,
+        nisn: dataSiswa.nisn,
       },
       process.env.JWT_ACCESS_TOKEN,
       {

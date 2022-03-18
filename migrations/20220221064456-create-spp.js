@@ -11,7 +11,7 @@ module.exports = {
         },
         idSpp: {
           type: Sequelize.INTEGER,
-
+          onDelete: "CASCADE",
           onUpdate: "CASCADE",
           references: {
             model: "siswas",

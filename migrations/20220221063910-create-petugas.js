@@ -19,7 +19,7 @@ module.exports = {
       },
       level: {
         type: Sequelize.ENUM("admin", "petugas"),
-        defaultValue: "petugas",
+        defaultValue: "admin",
       },
       createdAt: {
         allowNull: false,
