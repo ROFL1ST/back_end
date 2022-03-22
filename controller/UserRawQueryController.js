@@ -6,7 +6,7 @@ const userList = async (req, res) => {
     const { name, jenisKelamin, id } = req.query;
     console.log(name);
     const users = await sequelize.query(
-      "  SELECT a.id, a.idSpp, a.tahun, a.nominal, b.nama, b.alamat, b.nisn FROM spps AS a LEFT JOIN siswas AS b ON (a.idSpp = b.id)",
+      "SELECT * FROM spps",
       {
         type: QueryTypes.SELECT,
         raw: true,
@@ -65,15 +65,15 @@ const userListHistory = async (req, res) => {
 
 const userListHistoryUser = async (req, res) => {
   try {
-    const { name, id } = req.params;
+    const { name, nisn } = req.params;
     console.log(name);
     const users = await sequelize.query(
-      "  SELECT a.id, a.nisn, a.tahunDibayar, a.tglBayar, a.jumlahBayar, a.bulanDibayar, b.nama, b.alamat FROM pembayarans AS a LEFT JOIN siswas AS b ON (a.nisn = b.nisn) WHERE a.id = :id",
+      "  SELECT a.id, a.nisn, a.tahunDibayar, a.tglBayar, a.jumlahBayar, a.bulanDibayar, b.nama, b.alamat FROM pembayarans AS a LEFT JOIN siswas AS b ON (a.nisn = b.nisn) WHERE b.nisn = :nisn",
       {
         type: QueryTypes.SELECT,
         raw: true,
         replacements: {
-          id: `${id === undefined ? "" : id}`,
+          nisn: `${nisn === undefined ? "" : nisn}`,
         },
       }
     );
@@ -167,7 +167,37 @@ const userListUser = async (req, res) => {
     const { name, id } = req.params;
     console.log(name);
     const users = await sequelize.query(
-      "  SELECT a.id,  a.tahun, a.nominal, b.nisn, b.nama, b.alamat FROM spps AS a LEFT JOIN siswas AS b ON (a.idSpp = b.id) WHERE a.idSpp = :id",
+      "  SELECT a.id,  a.tahun, a.nominal, b.nisn, b.nama, b.alamat FROM spps AS a LEFT JOIN siswas AS b ON (a.id = b.idSpp) WHERE b.idSpp = :id",
+      {
+        type: QueryTypes.SELECT,
+        raw: true,
+        replacements: {
+          id: `${id === undefined ? "" : id}`,
+        },
+      }
+    );
+    console.log(users);
+    if (users.length == -0) {
+      return res.json({
+        status: "fail",
+        msg: "no users registered",
+      });
+    }
+    return res.json({
+      status: "success",
+      msg: "found them",
+      data: users,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const userListUserList = async (req, res) => {
+  try {
+    const { name, id } = req.params;
+    console.log(name);
+    const users = await sequelize.query(
+      "  SELECT a.id,  a.tahun, a.nominal, b.nisn, b.nama, b.alamat FROM spps AS a LEFT JOIN siswas AS b ON (a.id = b.idSpp)",
       {
         type: QueryTypes.SELECT,
         raw: true,
@@ -300,5 +330,6 @@ module.exports = {
   userListUser,
   siswaList,
   userListHistoryUserDetail,
-  detailPembayaran
+  detailPembayaran,
+  userListUserList
 };

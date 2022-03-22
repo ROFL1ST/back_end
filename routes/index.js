@@ -13,7 +13,8 @@ const {
   userListHistoryUser,
   userListUser,
   userListHistoryUserDetail,
-  detailPembayaran
+  detailPembayaran,
+  userListUserList
 } = require("../controller/UserRawQueryController");
 const {
   index,
@@ -60,7 +61,7 @@ router.post("/loginSiswa", loginSiswa);
 // siswa
 router.use(validationMiddleware);
 router.post("/createSiswa", createSiswa);
-router.post("/createPembayaran", createPembayaran);
+
 router.get("/profile/siswa/:id", detail);
 router.get("/siswa", siswaList);
 router.put("/siswa/update/:id", updateSiswa);
@@ -78,13 +79,15 @@ router.delete("/petugas/delete/:id", hapusPetugas);
 // index
 router.use(pageMiddleWare);
 router.get("/listOrder", userList);
+router.get("/list", userListUserList);
+router.get("/listOrder/:id", userListUser);
 router.put("/listOrder/perbarui/:id", update);
 router.delete("/listOrder/delete/:id", hapus);
 router.get("/listOrder/detail/:id", detailList);
-router.get("/listOrder/:id", userListUser);
+router.post("/createPembayaran", createPembayaran);
 
 // History
-router.get("/listOrderHistory/:id", userListHistoryUser);
+router.get("/listOrderHistory/:nisn", userListHistoryUser);
 router.get("/listOrderHistory", userListHistory);
 router.get("/listOrderHistory/detail/:id", userListHistoryUserDetail);
 router.delete("/listOrderHistory/delete/:id", hapusHistory);

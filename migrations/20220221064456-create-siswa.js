@@ -37,7 +37,16 @@ module.exports = {
       noTelp: {
         type: Sequelize.STRING
       },
-
+      idSpp: {
+        type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        references: {
+          model: "spps",
+          key: "id",
+          as: "idSpp",
+        },
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

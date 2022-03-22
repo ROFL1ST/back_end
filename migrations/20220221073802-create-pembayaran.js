@@ -29,7 +29,7 @@ module.exports = {
         },
       },
       tglBayar: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
       },
       bulanDibayar: {
         type: Sequelize.STRING,
@@ -42,7 +42,7 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
         references: {
-          model: "spps",
+          model: "siswas",
           key: "idSpp",
           as: "idSpp",
         },

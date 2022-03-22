@@ -1,6 +1,8 @@
 const Pembayaran = require("../models").pembayaran;
+// const SppModel = require("../models").spp;
 const SppModel = require("../models").spp;
 const PetugasModel = require("../models").petugas;
+const SiswaUpdate = require("../models").siswa
 const Kelas = require("../models").kelas;
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
@@ -166,7 +168,9 @@ const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { nominal, tahun } = req.body;
-    const usersUpdate = await SppModel.findByPk(id);
+    const usersUpdate = await SppModel.findByPk(id, {
+      attributes: ["tahun", "nominal"],
+    });
     if (usersUpdate === null) {
       return res.json({
         status: "fail",
@@ -201,8 +205,10 @@ const update = async (req, res) => {
 
 const detailList = async (req, res) => {
   try {
-    const { id } = req.params;
-    const pembayaran = await SppModel.findByPk(id);
+    const id = req.params.id;
+    const pembayaran = await SppModel.findByPk(id, {
+      attributes: ["tahun", "nominal"],
+    });
     if (pembayaran === null) {
       return res.json({
         status: "Fail",
@@ -217,6 +223,10 @@ const detailList = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(403).json({
+      status: "fail",
+      msg: "something's wrong",
+    });
   }
 };
 const hapus = async (req, res) => {
@@ -250,8 +260,8 @@ const hapus = async (req, res) => {
 
 const detailListHistory = async (req, res) => {
   try {
-    const  idSpp  = req.params.idSpp;
-    const pembayaran = await Pembayaran.findByPk(idSpp)
+    const idSpp = req.params.idSpp;
+    const pembayaran = await Pembayaran.findByPk(idSpp);
     if (pembayaran === null) {
       return res.json({
         status: "Fail",
@@ -334,7 +344,7 @@ const indexKelas = async (req, res) => {
   try {
     // const { limit, offset } = getPagination(page, pageSize);
     const dataUser = await Kelas.findAll({
-      attributes: ["id" , "namaKelas", "kompetensi_keahlian"],
+      attributes: ["id", "namaKelas", "kompetensi_keahlian"],
     });
     return res.json({
       status: "succes",
@@ -350,8 +360,8 @@ const indexKelas = async (req, res) => {
 const updateSiswa = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nisn, nis, nama, alamat, noTelp } = req.body;
-    const usersUpdate = await SiswaModel.findByPk(id);
+    const { idSpp, nisn, nis, nama, alamat, noTelp,  } = req.body;
+    const usersUpdate = await SiswaUpdate.findByPk(id);
     if (usersUpdate === null) {
       return res.json({
         status: "fail",
@@ -360,11 +370,13 @@ const updateSiswa = async (req, res) => {
     }
     await SiswaModel.update(
       {
+        idSpp,
         nisn,
         nis,
         nama,
         alamat,
         noTelp,
+        
       },
       {
         where: {
@@ -578,7 +590,6 @@ const updateKelas = async (req, res) => {
     }
     await Kelas.update(
       {
-
         namaKelas,
         kompetensi_keahlian,
       },
@@ -602,7 +613,6 @@ const updateKelas = async (req, res) => {
     });
   }
 };
-
 
 const hapusKelas = async (req, res) => {
   try {
@@ -656,5 +666,5 @@ module.exports = {
   detailKelas,
   detailKelasUpdate,
   updateKelas,
-  hapusKelas
+  hapusKelas,
 };

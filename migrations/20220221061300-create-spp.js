@@ -9,16 +9,7 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        idSpp: {
-          type: Sequelize.INTEGER,
-          onDelete: "CASCADE",
-          onUpdate: "CASCADE",
-          references: {
-            model: "siswas",
-            key: "id",
-            as: "idSpp",
-          },
-        },
+  
         tahun: {
           type: Sequelize.INTEGER,
         },
@@ -34,7 +25,7 @@ module.exports = {
           type: Sequelize.DATE,
         },
       })
-      .then(() => queryInterface.addIndex("spps", ["idSpp"]));
+      
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("spps");
